@@ -282,6 +282,7 @@ void MainWindow::checksave()
 
 void MainWindow::closeEvent(QCloseEvent *event)
 {
+    checksave();
     event->accept();
 }
 
