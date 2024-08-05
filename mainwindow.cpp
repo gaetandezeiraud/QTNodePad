@@ -10,6 +10,22 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     setCentralWidget(ui->textEdit);
 
+    // Custom context menu for textEdit
+    QMenu *contextMenu = ui->textEdit->createStandardContextMenu();
+
+    // Add actions to the context menu
+    contextMenu->addSeparator();
+    contextMenu->addAction(ui->actionBold);
+    contextMenu->addAction(ui->actionItalic);
+    contextMenu->addAction(ui->actionUnderline);
+    contextMenu->addAction(ui->actionStrike);
+
+    // Associate the menu with the QTextEdit
+    ui->textEdit->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(ui->textEdit, &QTextEdit::customContextMenuRequested, this, [&, contextMenu](const QPoint &pos) {
+        contextMenu->exec(ui->textEdit->mapToGlobal(pos));
+    });
+
     newFile();
 }
 
