@@ -4,6 +4,8 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
+    , _findDock(nullptr)
+    , _findDialog(nullptr)
     , _path("")
     , _changed(false)
 {
@@ -86,16 +88,33 @@ void MainWindow::on_actionPaste_triggered()
 
 void MainWindow::on_actionFind_triggered()
 {
-    FindDialog* dlg = new FindDialog(this);
-    if (!dlg->exec()) return;
+    if (_findDock != nullptr && !_findDock->isVisible())
+    {
+        _findDock->setVisible(true);
+    }
+    else if (_findDock == nullptr)
+    {
+        _findDock = new QDockWidget(tr("Find"), this);
+        _findDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
 
-    QTextDocument::FindFlags flags;
-    if (dlg->caseSensitive()) flags |= QTextDocument::FindFlag::FindCaseSensitively;
-    if (dlg->wholeWords()) flags |= QTextDocument::FindFlag::FindWholeWords;
-    if (dlg->backwards()) flags |= QTextDocument::FindFlag::FindBackward;
+        _findDialog = new FindDialog(this, ui->textEdit);
+        _findDock->setWidget(_findDialog);
 
-    bool value = ui->textEdit->find(dlg->text(), flags);
-    if (!value) ui->statusbar->showMessage("Find '" + dlg->text() + "' not found");
+        connect(_findDock, &QDockWidget::visibilityChanged, [&](bool visibility){
+            if (!visibility)
+                _findDialog->reset();
+        });
+
+        addDockWidget(Qt::RightDockWidgetArea, _findDock);
+    }
+
+    // Update the search string with the current selection, if exist
+    QTextCursor cursor = ui->textEdit->textCursor();
+    QString selectedText = cursor.selectedText();
+    if (!selectedText.isEmpty())
+        _findDialog->setText(selectedText);
+
+    _findDialog->setFocus();
 }
 
 

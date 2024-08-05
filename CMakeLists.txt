@@ -27,6 +27,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         replacedialog.h replacedialog.cpp replacedialog.ui
         aboutdialog.h aboutdialog.cpp aboutdialog.ui
         resources.qrc
+        searchhighlight.h searchhighlight.cpp
     )
 # Define target properties for Android with Qt 6 as:
 #    set_property(TARGET QTNotePad APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR

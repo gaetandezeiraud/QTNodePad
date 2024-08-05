@@ -11,6 +11,7 @@
 #include <QFontDialog>
 #include <QDesktopServices>
 #include <QUrl>
+#include <QDockWidget>
 #include "finddialog.h"
 #include "replacedialog.h"
 #include "aboutdialog.h"
@@ -57,6 +58,9 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
+
+    QDockWidget *_findDock;
+    FindDialog *_findDialog;
 
     bool _changed;
     QString _fileName;

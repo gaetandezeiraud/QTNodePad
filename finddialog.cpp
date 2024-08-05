@@ -1,13 +1,15 @@
 #include "finddialog.h"
 #include "ui_finddialog.h"
 
-FindDialog::FindDialog(QWidget *parent)
+FindDialog::FindDialog(QWidget *parent, QTextEdit *textEdit)
     : QDialog(parent)
     , ui(new Ui::FindDialog)
+    , _textEdit(textEdit)
 {
     ui->setupUi(this);
     init();
     save();
+    setFocus();
 }
 
 FindDialog::~FindDialog()
@@ -15,23 +17,34 @@ FindDialog::~FindDialog()
     delete ui;
 }
 
-void FindDialog::on_buttonBox_accepted()
+void FindDialog::reset()
 {
-    save();
-    accept();
+    _searchHighLight->searchText("");
 }
 
-
-void FindDialog::on_buttonBox_rejected()
+void FindDialog::setFocus()
 {
-    reject();
+    ui->lineEdit->setFocus();
 }
 
-void FindDialog::goBack()
+void FindDialog::goPrevious()
 {
     save();
     _backwards = true;
-    accept();
+    findInTextEdit();
+}
+
+void FindDialog::goNext()
+{
+    save();
+    findInTextEdit();
+}
+
+void FindDialog::setText(const QString &newText)
+{
+    _text = newText;
+    ui->lineEdit->setText(_text);
+    _searchHighLight->searchText(_text);
 }
 
 QString FindDialog::text() const
@@ -56,9 +69,16 @@ bool FindDialog::backwards() const
 
 void FindDialog::init()
 {
-    QPushButton* btnBack = new QPushButton("Back", this);
-    connect(btnBack, &QPushButton::clicked, this, &FindDialog::goBack);
-    ui->buttonBox->addButton(btnBack, QDialogButtonBox::ActionRole);
+    QPushButton* btnPrevious = new QPushButton("Previous", this);
+    QPushButton* btnNext = new QPushButton("Next", this);
+
+    connect(btnPrevious, &QPushButton::clicked, this, &FindDialog::goPrevious);
+    ui->buttonBox->addButton(btnPrevious, QDialogButtonBox::ActionRole);
+
+    connect(btnNext, &QPushButton::clicked, this, &FindDialog::goNext);
+    ui->buttonBox->addButton(btnNext, QDialogButtonBox::ActionRole);
+
+    _searchHighLight = new SearchHighLight(_textEdit->document());
 }
 
 void FindDialog::save()
@@ -68,3 +88,37 @@ void FindDialog::save()
     _wholeWords = ui->checkBox_MatchWholeWords->isChecked();
     _backwards = false;
 }
+
+void FindDialog::findInTextEdit()
+{
+    QTextDocument::FindFlags flags;
+    if (caseSensitive()) flags |= QTextDocument::FindFlag::FindCaseSensitively;
+    if (wholeWords()) flags |= QTextDocument::FindFlag::FindWholeWords;
+    if (backwards()) flags |= QTextDocument::FindFlag::FindBackward;
+
+    _textEdit->find(text(), flags);
+}
+
+void FindDialog::on_lineEdit_textChanged(const QString &text)
+{
+    _text = text;
+    _searchHighLight->searchText(_text);
+}
+
+void FindDialog::on_checkBox_CaseSensitive_checkStateChanged(const Qt::CheckState &state)
+{
+    _searchHighLight->setCaseSensitive(state == Qt::Checked);
+    _searchHighLight->searchText(_text);
+}
+
+void FindDialog::on_checkBox_MatchWholeWords_checkStateChanged(const Qt::CheckState &state)
+{
+    _searchHighLight->setWholeWord(state == Qt::Checked);
+    _searchHighLight->searchText(_text);
+}
+
+void FindDialog::on_lineEdit_returnPressed()
+{
+    goNext();
+}
+
