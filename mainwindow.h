@@ -59,8 +59,10 @@ private:
     Ui::MainWindow *ui;
 
     bool _changed;
+    QString _fileName;
     QString _path;
 
+    void updateCaption();
     void newFile();
     void openFile();
     void saveFile(QString path);

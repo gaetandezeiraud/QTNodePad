@@ -198,14 +198,22 @@ void MainWindow::on_actionRedo_triggered()
 void MainWindow::on_textEdit_textChanged()
 {
     _changed = true;
+    updateCaption();
+}
+
+void MainWindow::updateCaption()
+{
+    this->setWindowTitle(_fileName + (_changed ? "*" : "") + " - " + QApplication::applicationDisplayName());
 }
 
 void MainWindow::newFile()
 {
     ui->textEdit->clear();
     ui->statusbar->showMessage("New File");
+    _fileName = "Untitled";
     _path = "";
     _changed = false;
+    updateCaption();
 }
 
 void MainWindow::openFile()
@@ -225,8 +233,13 @@ void MainWindow::openFile()
     file.close();
 
     _path = path;
+
+    QFileInfo fileInfo(_path);
+    _fileName = fileInfo.fileName();
+
     ui->statusbar->showMessage(_path);
     _changed = false;
+     updateCaption();
 }
 
 void MainWindow::saveFile(QString path)
@@ -254,6 +267,7 @@ void MainWindow::saveFile(QString path)
     _path = path;
     ui->statusbar->showMessage(_path);
     _changed = false;
+    updateCaption();
 }
 
 void MainWindow::saveFileAs()
