@@ -12,6 +12,8 @@
 #include <QDesktopServices>
 #include <QUrl>
 #include <QDockWidget>
+#include <QPrinter>
+#include <QPrintDialog>
 #include "finddialog.h"
 #include "replacedialog.h"
 #include "aboutdialog.h"
@@ -55,6 +57,8 @@ private slots:
     void on_actionUndo_triggered();
     void on_actionRedo_triggered();
     void on_textEdit_textChanged();
+
+    void on_actionPrint_triggered();
 
 private:
     Ui::MainWindow *ui;

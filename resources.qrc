@@ -27,5 +27,6 @@
         <file>images/text_underline.png</file>
         <file>images/zoom_in.png</file>
         <file>images/zoom_out.png</file>
+        <file>images/printer.png</file>
     </qresource>
 </RCC>

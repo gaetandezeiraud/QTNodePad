@@ -236,6 +236,15 @@ void MainWindow::on_textEdit_textChanged()
     updateCaption();
 }
 
+void MainWindow::on_actionPrint_triggered()
+{
+    QTextDocument *document = ui->textEdit->document();
+    QPrinter printer;
+    QPrintDialog *dlg = new QPrintDialog(&printer, this);
+    if (dlg->exec() != QDialog::Accepted) return;
+    document->print(&printer);
+}
+
 void MainWindow::updateCaption()
 {
     this->setWindowTitle(_fileName + (_changed ? "*" : "") + " - " + QApplication::applicationDisplayName());
