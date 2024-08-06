@@ -14,9 +14,13 @@
 #include <QDockWidget>
 #include <QPrinter>
 #include <QPrintDialog>
+#include <QList>
+#include <QSettings>
 #include "finddialog.h"
 #include "replacedialog.h"
 #include "aboutdialog.h"
+
+#define RECENT_FILES_MAX 5
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -57,11 +61,14 @@ private slots:
     void on_actionUndo_triggered();
     void on_actionRedo_triggered();
     void on_textEdit_textChanged();
-
     void on_actionPrint_triggered();
+    void openRecent();
 
 private:
     Ui::MainWindow *ui;
+
+    QMenu* _recentFilesMenu;
+    QList<QAction*> _recentFileActionList;
 
     QDockWidget *_findDock;
     FindDialog *_findDialog;
@@ -73,9 +80,13 @@ private:
     void updateCaption();
     void newFile();
     void openFile();
+    void openFile(const QString& path);
     void saveFile(QString path);
     void saveFileAs();
     void checksave();
+
+    void adjustForCurrentFile(const QString& filePath);
+    void updateRecentActionList();
 
     // QWidget interface
 protected:

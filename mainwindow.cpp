@@ -12,6 +12,27 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     setCentralWidget(ui->textEdit);
 
+    // Recent files
+    QAction* recentFileAction = 0;
+    for(auto i = 0; i < RECENT_FILES_MAX; ++i){
+        recentFileAction = new QAction(this);
+        recentFileAction->setVisible(false);
+        connect(recentFileAction, &QAction::triggered, this, &MainWindow::openRecent);
+        _recentFileActionList.append(recentFileAction);
+    }
+
+    _recentFilesMenu = new QMenu(tr("&Open Recent"));
+    ui->menuFile->insertMenu(ui->menuFile->actions()[2], _recentFilesMenu);
+
+    //_recentFilesMenu = ui->menuFile->addMenu(tr("Open Recent"));
+
+    // ui->menuFile->actions()[3]
+
+    for(auto i = 0; i < RECENT_FILES_MAX; ++i)
+        _recentFilesMenu->addAction(_recentFileActionList.at(i));
+
+    updateRecentActionList();
+
     // Custom context menu for textEdit
     QMenu *contextMenu = ui->textEdit->createStandardContextMenu();
 
@@ -263,8 +284,11 @@ void MainWindow::newFile()
 void MainWindow::openFile()
 {
     QString path = QFileDialog::getOpenFileName(this, "Open File");
-    if (path.isEmpty()) return;
+    openFile(path);
+}
 
+void MainWindow::openFile(const QString& path)
+{
     QFile file(path);
     if (!file.open(QIODevice::ReadOnly))
     {
@@ -284,6 +308,7 @@ void MainWindow::openFile()
     ui->statusbar->showMessage(_path);
     _changed = false;
      updateCaption();
+    adjustForCurrentFile(_path);
 }
 
 void MainWindow::saveFile(QString path)
@@ -319,6 +344,7 @@ void MainWindow::saveFileAs()
     QString path = QFileDialog::getSaveFileName(this, "Save File");
     if (path.isEmpty()) return;
     saveFile(path);
+    adjustForCurrentFile(_path);
 }
 
 void MainWindow::checksave()
@@ -344,4 +370,46 @@ void MainWindow::closeEvent(QCloseEvent *event)
     event->accept();
 }
 
+void MainWindow::openRecent()
+{
+    QAction *action = qobject_cast<QAction *>(sender());
+    if (action)
+        openFile(action->data().toString());
+}
 
+void MainWindow::adjustForCurrentFile(const QString& filePath)
+{
+    QSettings settings;
+    QStringList recentFilePaths = settings.value("recentFiles").toStringList();
+    recentFilePaths.removeAll(filePath);
+    recentFilePaths.prepend(filePath);
+
+    while (recentFilePaths.size() > RECENT_FILES_MAX)
+        recentFilePaths.removeLast();
+
+    settings.setValue("recentFiles", recentFilePaths);
+
+    updateRecentActionList();
+}
+
+void MainWindow::updateRecentActionList()
+{
+    QSettings settings;
+    QStringList recentFilePaths = settings.value("recentFiles").toStringList();
+
+    auto itEnd = 0u;
+    if(recentFilePaths.size() <= RECENT_FILES_MAX)
+        itEnd = recentFilePaths.size();
+    else
+        itEnd = RECENT_FILES_MAX;
+
+    for (auto i = 0u; i < itEnd; ++i) {
+        QString strippedName = QFileInfo(recentFilePaths.at(i)).fileName();
+        _recentFileActionList.at(i)->setText(strippedName);
+        _recentFileActionList.at(i)->setData(recentFilePaths.at(i));
+        _recentFileActionList.at(i)->setVisible(true);
+    }
+
+    for (auto i = itEnd; i < RECENT_FILES_MAX; ++i)
+        _recentFileActionList.at(i)->setVisible(false);
+}
