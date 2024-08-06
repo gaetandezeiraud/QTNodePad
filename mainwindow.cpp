@@ -26,10 +26,6 @@ MainWindow::MainWindow(QWidget *parent)
     _recentFilesMenu = new QMenu(tr("&Open Recent"));
     ui->menuFile->insertMenu(ui->menuFile->actions()[2], _recentFilesMenu);
 
-    //_recentFilesMenu = ui->menuFile->addMenu(tr("Open Recent"));
-
-    // ui->menuFile->actions()[3]
-
     for(auto i = 0; i < RECENT_FILES_MAX; ++i)
         _recentFilesMenu->addAction(_recentFileActionList.at(i));
 
@@ -148,24 +144,6 @@ void MainWindow::on_actionFind_triggered()
 
 void MainWindow::on_actionReplace_triggered()
 {
-    /*
-    ReplaceDialog* dlg = new ReplaceDialog(this);
-    if (!dlg->exec()) return;
-
-    if (dlg->all())
-    {
-        QString text = ui->textEdit->toHtml();
-        text = text.replace(dlg->text(), dlg->replaceText());
-        ui->textEdit->setHtml(text);
-    }
-    else
-    {
-        bool value = ui->textEdit->find(dlg->text());
-        QTextCursor cursor = ui->textEdit->textCursor();
-        cursor.insertHtml(dlg->replaceText());
-        if (!value) ui->statusbar->showMessage("Find '" + dlg->text() + "' not found, can't replace it");
-    }*/
-
     if (_replaceDock == nullptr)
     {
         _replaceDock = new QDockWidget(tr("Replace"), this);
