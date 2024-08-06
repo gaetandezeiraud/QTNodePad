@@ -71,6 +71,9 @@ private:
     QDockWidget *_findDock;
     FindDialog *_findDialog;
 
+    QDockWidget *_replaceDock;
+    ReplaceDialog *_replaceDialog;
+
     bool _changed;
     QString _fileName;
     QString _path;

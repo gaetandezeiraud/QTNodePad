@@ -6,11 +6,14 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
     , _findDock(nullptr)
     , _findDialog(nullptr)
+    , _replaceDock(nullptr)
+    , _replaceDialog(nullptr)
     , _path("")
     , _changed(false)
 {
     ui->setupUi(this);
     setCentralWidget(ui->textEdit);
+    setDockOptions(DockOption::AllowNestedDocks | DockOption::AllowTabbedDocks);
 
     // Recent files
     QAction* recentFileAction = 0;
@@ -114,12 +117,21 @@ void MainWindow::on_actionFind_triggered()
                 _findDialog->reset();
         });
 
-        addDockWidget(Qt::RightDockWidgetArea, _findDock);
+        if (_replaceDock)
+        {
+            tabifyDockWidget(_replaceDock, _findDock);
+            qApp->processEvents(); // Force QT to process events to tabify the widget and allow us to focus it directly
+        }
+        else
+            addDockWidget(Qt::RightDockWidgetArea, _findDock);
     }
     else if (!_findDock->isVisible())
     {
         _findDock->setVisible(true);
     }
+
+    _findDock->raise();
+    _findDock->setFocus();
 
     // Update the search string with the current selection, if exist
     QTextCursor cursor = ui->textEdit->textCursor();
@@ -132,6 +144,7 @@ void MainWindow::on_actionFind_triggered()
 
 void MainWindow::on_actionReplace_triggered()
 {
+    /*
     ReplaceDialog* dlg = new ReplaceDialog(this);
     if (!dlg->exec()) return;
 
@@ -147,7 +160,45 @@ void MainWindow::on_actionReplace_triggered()
         QTextCursor cursor = ui->textEdit->textCursor();
         cursor.insertHtml(dlg->replaceText());
         if (!value) ui->statusbar->showMessage("Find '" + dlg->text() + "' not found, can't replace it");
+    }*/
+
+    if (_replaceDock == nullptr)
+    {
+        _replaceDock = new QDockWidget(tr("Replace"), this);
+        _replaceDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
+
+        _replaceDialog = new ReplaceDialog(this);
+        _replaceDock->setWidget(_replaceDialog);
+
+        connect(_replaceDock, &QDockWidget::visibilityChanged, [&](bool visibility){
+            //if (!visibility)
+            //    _replaceDialog->reset();
+        });
+
+
+        if (_findDock)
+        {
+            tabifyDockWidget(_findDock, _replaceDock);
+            qApp->processEvents(); // Force QT to process events to tabify the widget and allow us to focus it directly
+        }
+        else
+            addDockWidget(Qt::RightDockWidgetArea, _replaceDock);
     }
+    else if (!_replaceDock->isVisible())
+    {
+        _replaceDock->setVisible(true);
+    }
+
+    _replaceDock->raise();
+    _replaceDock->setFocus();
+
+    // Update the search string with the current selection, if exist
+    QTextCursor cursor = ui->textEdit->textCursor();
+    QString selectedText = cursor.selectedText();
+    //if (!selectedText.isEmpty())
+    //    _replaceDialog->setText(selectedText);
+
+    _replaceDialog->setFocus();
 }
 
 void MainWindow::on_actionSelect_All_triggered()
