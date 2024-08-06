@@ -88,11 +88,7 @@ void MainWindow::on_actionPaste_triggered()
 
 void MainWindow::on_actionFind_triggered()
 {
-    if (_findDock != nullptr && !_findDock->isVisible())
-    {
-        _findDock->setVisible(true);
-    }
-    else if (_findDock == nullptr)
+    if (_findDock == nullptr)
     {
         _findDock = new QDockWidget(tr("Find"), this);
         _findDock->setAllowedAreas(Qt::LeftDockWidgetArea | Qt::RightDockWidgetArea);
@@ -106,6 +102,10 @@ void MainWindow::on_actionFind_triggered()
         });
 
         addDockWidget(Qt::RightDockWidgetArea, _findDock);
+    }
+    else if (!_findDock->isVisible())
+    {
+        _findDock->setVisible(true);
     }
 
     // Update the search string with the current selection, if exist
