@@ -48,8 +48,6 @@ private slots:
     void on_actionFind_triggered();
     void on_actionReplace_triggered();
     void on_actionSelect_All_triggered();
-    void on_actionZoom_In_triggered();
-    void on_actionZoom_out_triggered();
     void on_actionBold_triggered();
     void on_actionItalic_triggered();
     void on_actionUnderline_triggered();

@@ -31,7 +31,7 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>36</height>
+     <height>22</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -64,13 +64,6 @@
     <addaction name="separator"/>
     <addaction name="actionSelect_All"/>
    </widget>
-   <widget class="QMenu" name="menuView">
-    <property name="title">
-     <string>View</string>
-    </property>
-    <addaction name="actionZoom_In"/>
-    <addaction name="actionZoom_out"/>
-   </widget>
    <widget class="QMenu" name="menuText">
     <property name="title">
      <string>Text</string>
@@ -93,7 +86,6 @@
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
-   <addaction name="menuView"/>
    <addaction name="menuText"/>
    <addaction name="menuAbout"/>
   </widget>
@@ -243,24 +235,6 @@
    </property>
    <property name="text">
     <string>Select All</string>
-   </property>
-  </action>
-  <action name="actionZoom_In">
-   <property name="icon">
-    <iconset resource="resources.qrc">
-     <normaloff>:/files/images/zoom_in.png</normaloff>:/files/images/zoom_in.png</iconset>
-   </property>
-   <property name="text">
-    <string>Zoom in</string>
-   </property>
-  </action>
-  <action name="actionZoom_out">
-   <property name="icon">
-    <iconset resource="resources.qrc">
-     <normaloff>:/files/images/zoom_out.png</normaloff>:/files/images/zoom_out.png</iconset>
-   </property>
-   <property name="text">
-    <string>Zoom out</string>
    </property>
   </action>
   <action name="actionBold">

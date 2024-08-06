@@ -63,49 +63,41 @@ void MainWindow::on_actionNew_triggered()
     newFile();
 }
 
-
 void MainWindow::on_actionOpen_triggered()
 {
     checksave();
     openFile();
 }
 
-
 void MainWindow::on_actionSave_triggered()
 {
     saveFile(_path);
 }
-
 
 void MainWindow::on_actionSave_As_triggered()
 {
     saveFileAs();
 }
 
-
 void MainWindow::on_actionExit_triggered()
 {
     close();
 }
-
 
 void MainWindow::on_actionCopy_triggered()
 {
     ui->textEdit->copy();
 }
 
-
 void MainWindow::on_actionCut_triggered()
 {
     ui->textEdit->cut();
 }
 
-
 void MainWindow::on_actionPaste_triggered()
 {
     ui->textEdit->paste();
 }
-
 
 void MainWindow::on_actionFind_triggered()
 {
@@ -138,7 +130,6 @@ void MainWindow::on_actionFind_triggered()
     _findDialog->setFocus();
 }
 
-
 void MainWindow::on_actionReplace_triggered()
 {
     ReplaceDialog* dlg = new ReplaceDialog(this);
@@ -159,24 +150,10 @@ void MainWindow::on_actionReplace_triggered()
     }
 }
 
-
 void MainWindow::on_actionSelect_All_triggered()
 {
     ui->textEdit->selectAll();
 }
-
-
-void MainWindow::on_actionZoom_In_triggered()
-{
-    ui->textEdit->zoomIn(5);
-}
-
-
-void MainWindow::on_actionZoom_out_triggered()
-{
-    ui->textEdit->zoomOut(5);
-}
-
 
 void MainWindow::on_actionBold_triggered()
 {
@@ -185,14 +162,12 @@ void MainWindow::on_actionBold_triggered()
     ui->textEdit->setCurrentFont(font);
 }
 
-
 void MainWindow::on_actionItalic_triggered()
 {
     QFont font = ui->textEdit->currentFont();
     font.italic() ? font.setItalic(false) : font.setItalic(true);
     ui->textEdit->setCurrentFont(font);
 }
-
 
 void MainWindow::on_actionUnderline_triggered()
 {
@@ -201,14 +176,12 @@ void MainWindow::on_actionUnderline_triggered()
     ui->textEdit->setCurrentFont(font);
 }
 
-
 void MainWindow::on_actionStrike_triggered()
 {
     QFont font = ui->textEdit->currentFont();
     font.strikeOut() ? font.setStrikeOut(false) : font.setStrikeOut(true);
     ui->textEdit->setCurrentFont(font);
 }
-
 
 void MainWindow::on_actionColor_triggered()
 {
@@ -218,7 +191,6 @@ void MainWindow::on_actionColor_triggered()
     ui->textEdit->setTextColor(color);
 }
 
-
 void MainWindow::on_actionFont_triggered()
 {
     bool ok;
@@ -226,13 +198,11 @@ void MainWindow::on_actionFont_triggered()
     if (ok) ui->textEdit->setCurrentFont(font);
 }
 
-
 void MainWindow::on_actionAbout_triggered()
 {
     AboutDialog* dlg = new AboutDialog(this);
     dlg->exec();
 }
-
 
 void MainWindow::on_actionHelp_triggered()
 {
@@ -244,12 +214,10 @@ void MainWindow::on_actionUndo_triggered()
     ui->textEdit->undo();
 }
 
-
 void MainWindow::on_actionRedo_triggered()
 {
     ui->textEdit->redo();
 }
-
 
 void MainWindow::on_textEdit_textChanged()
 {
