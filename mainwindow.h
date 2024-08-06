@@ -19,6 +19,7 @@
 #include "finddialog.h"
 #include "replacedialog.h"
 #include "aboutdialog.h"
+#include "document.h"
 
 #define RECENT_FILES_MAX 5
 
@@ -74,15 +75,13 @@ private:
     QDockWidget *_replaceDock;
     ReplaceDialog *_replaceDialog;
 
-    bool _changed;
-    QString _fileName;
-    QString _path;
+    Document *_document;
 
     void updateCaption();
     void newFile();
     void openFile();
     void openFile(const QString& path);
-    void saveFile(QString path);
+    void saveFile();
     void saveFileAs();
     void checksave();
 

@@ -8,8 +8,7 @@ MainWindow::MainWindow(QWidget *parent)
     , _findDialog(nullptr)
     , _replaceDock(nullptr)
     , _replaceDialog(nullptr)
-    , _path("")
-    , _changed(false)
+    , _document(new Document())
 {
     ui->setupUi(this);
     setCentralWidget(ui->textEdit);
@@ -57,6 +56,11 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
+    if (_document != nullptr)
+    {
+        delete _document;
+        _document = nullptr;
+    }
     delete ui;
 }
 
@@ -74,7 +78,7 @@ void MainWindow::on_actionOpen_triggered()
 
 void MainWindow::on_actionSave_triggered()
 {
-    saveFile(_path);
+    saveFile();
 }
 
 void MainWindow::on_actionSave_As_triggered()
@@ -272,7 +276,7 @@ void MainWindow::on_actionRedo_triggered()
 
 void MainWindow::on_textEdit_textChanged()
 {
-    _changed = true;
+    _document->modified();
     updateCaption();
 }
 
@@ -287,16 +291,22 @@ void MainWindow::on_actionPrint_triggered()
 
 void MainWindow::updateCaption()
 {
-    this->setWindowTitle(_fileName + (_changed ? "*" : "") + " - " + QApplication::applicationDisplayName());
+    this->setWindowTitle(_document->fileName() + (_document->isSaved() ? "" : "*") + " - " + QApplication::applicationDisplayName());
 }
 
 void MainWindow::newFile()
 {
     ui->textEdit->clear();
     ui->statusbar->showMessage("New File");
-    _fileName = "Untitled";
-    _path = "";
-    _changed = false;
+
+    // Create a new document
+    if (_document != nullptr)
+    {
+        delete _document;
+        _document = nullptr;
+    }
+    _document = new Document();
+
     updateCaption();
 }
 
@@ -308,53 +318,30 @@ void MainWindow::openFile()
 
 void MainWindow::openFile(const QString& path)
 {
-    QFile file(path);
-    if (!file.open(QIODevice::ReadOnly))
+    if (!_document->load(path, ui->textEdit))
     {
-        QMessageBox::critical(this, "Error", file.errorString());
+        QMessageBox::critical(this, "Error", "Can't load the file.");
         return;
     }
 
-    QTextStream stream(&file);
-    ui->textEdit->setHtml(stream.readAll());
-    file.close();
-
-    _path = path;
-
-    QFileInfo fileInfo(_path);
-    _fileName = fileInfo.fileName();
-
-    ui->statusbar->showMessage(_path);
-    _changed = false;
-     updateCaption();
-    adjustForCurrentFile(_path);
+    updateCaption();
+    adjustForCurrentFile(_document->fullPath());
 }
 
-void MainWindow::saveFile(QString path)
+void MainWindow::saveFile()
 {
-    if (path.isEmpty())
+    if (_document->fullPath().isEmpty())
     {
         saveFileAs();
         return;
     }
 
-    QFile file(path);
-    if (!file.open(QIODevice::WriteOnly))
+    if (!_document->save(ui->textEdit))
     {
-        QMessageBox::critical(this, "Error", file.errorString());
-        ui->statusbar->showMessage("Error, could not save the file");
-        saveFileAs();
+        QMessageBox::critical(this, "Error", "Can't save the file.");
         return;
     }
 
-
-    QTextStream stream(&file);
-    stream << ui->textEdit->toHtml();
-    file.close();
-
-    _path = path;
-    ui->statusbar->showMessage(_path);
-    _changed = false;
     updateCaption();
 }
 
@@ -362,25 +349,23 @@ void MainWindow::saveFileAs()
 {
     QString path = QFileDialog::getSaveFileName(this, "Save File");
     if (path.isEmpty()) return;
-    saveFile(path);
-    adjustForCurrentFile(_path);
+    _document->setFullPath(path);
+
+    saveFile();
+    adjustForCurrentFile(_document->fullPath());
 }
 
 void MainWindow::checksave()
 {
-    if (!_changed) return;
+    if (_document->isSaved()) return;
 
     QMessageBox::StandardButton value = QMessageBox::question(this, "Save File?", "You have un-saved changes would you like to save them?");
     if (value != QMessageBox::StandardButton::Yes) return;
 
-    if (_path.isEmpty())
-    {
+    if (_document->fullPath().isEmpty())
         saveFileAs();
-    }
     else
-    {
-        saveFile(_path);
-    }
+        saveFile();
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
