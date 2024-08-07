@@ -19,7 +19,6 @@
 
 #include "finddialog.h"
 #include "replacedialog.h"
-#include "aboutdialog.h"
 #include "document.h"
 
 #define RECENT_FILES_MAX 5
@@ -84,7 +83,7 @@ private:
 
 private:
     Ui::MainWindow *ui;
-    Document *_document;
+    std::unique_ptr<Document> _document;
 
     // Recent files
     QMenu* _recentFilesMenu;

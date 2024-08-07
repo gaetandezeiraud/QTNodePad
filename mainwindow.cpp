@@ -1,6 +1,8 @@
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
 
+#include "aboutdialog.h"
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -8,7 +10,7 @@ MainWindow::MainWindow(QWidget *parent)
     , _findDialog(nullptr)
     , _replaceDock(nullptr)
     , _replaceDialog(nullptr)
-    , _document(new Document())
+    , _document(std::make_unique<Document>())
 {
     ui->setupUi(this);
     setCentralWidget(ui->textEdit);
@@ -20,11 +22,6 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
-    if (_document != nullptr)
-    {
-        delete _document;
-        _document = nullptr;
-    }
     delete ui;
 }
 
@@ -253,12 +250,7 @@ void MainWindow::newFile()
     ui->statusbar->showMessage("New File");
 
     // Create a new document
-    if (_document != nullptr)
-    {
-        delete _document;
-        _document = nullptr;
-    }
-    _document = new Document();
+    _document = std::make_unique<Document>();
 
     updateCaption();
 }
