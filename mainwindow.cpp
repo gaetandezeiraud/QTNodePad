@@ -290,13 +290,22 @@ void MainWindow::newFile()
 
 void MainWindow::openFile()
 {
-    QString path = QFileDialog::getOpenFileName(this, "Open File");
+    QString path = QFileDialog::getOpenFileName(this, "Open File", QDir::homePath(), _document->getSupportedExtensionFilter());
     openFile(path);
 }
 
 void MainWindow::openFile(const QString& path)
 {
-    if (!_document->load(path, ui->textEdit))
+    if (path.isEmpty())
+        return;
+
+    if (!_document->setFullPath(path))
+    {
+        QMessageBox::critical(this, "Error", "The file format is not supported.");
+        return;
+    }
+
+    if (!_document->load(ui->textEdit))
     {
         QMessageBox::critical(this, "Error", "Can't load the file.");
         return;
@@ -325,7 +334,7 @@ void MainWindow::saveFile()
 
 void MainWindow::saveFileAs()
 {
-    QString path = QFileDialog::getSaveFileName(this, "Save File");
+    QString path = QFileDialog::getSaveFileName(this, "Save File", QDir::homePath(), _document->getSupportedExtensionFilter());
     if (path.isEmpty()) return;
     _document->setFullPath(path);
 

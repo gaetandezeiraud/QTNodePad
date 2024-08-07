@@ -31,13 +31,19 @@ const QString Document::fullPath() const
     return _fullPath;
 }
 
-void Document::setFullPath(const QString &fullPath)
+bool Document::setFullPath(const QString &fullPath)
 {
-    _fullPath = fullPath;
+    QFileInfo fileInfo(fullPath);
+    QString extension = fileInfo.suffix();
 
-    QFileInfo fileInfo(_fullPath);
+    if (!checkExtension(extension))
+        return false;
+
+    _fullPath = fullPath;
     _fileName = fileInfo.fileName();
     _extension = fileInfo.suffix();
+
+    return true;
 }
 
 const QString Document::fileName() const
@@ -50,17 +56,15 @@ const QString Document::extension() const
     return _extension;
 }
 
-bool Document::load(const QString& fullPath, QTextEdit* textEdit)
+bool Document::load(QTextEdit* textEdit)
 {
-    QFile file(fullPath);
+    QFile file(_fullPath);
     if (!file.open(QIODevice::ReadOnly))
         return false;
 
     QTextStream stream(&file);
     textEdit->setHtml(stream.readAll());
     file.close();
-
-    setFullPath(fullPath);
 
     return true;
 }
@@ -80,4 +84,19 @@ bool Document::save(QTextEdit* textEdit)
 
     _isSaved = true;
     return true;
+}
+
+const QString Document::getSupportedExtension() const
+{
+    return "qnp";
+}
+
+const QString Document::getSupportedExtensionFilter() const
+{
+    return "QTNodePad (*.qnp);;";
+}
+
+bool Document::checkExtension(const QString& extension)
+{
+    return extension == getSupportedExtension();
 }

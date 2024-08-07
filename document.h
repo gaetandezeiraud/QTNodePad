@@ -16,14 +16,20 @@ public:
     void modified();
 
     const QString fullPath() const;
-    void setFullPath(const QString &fullPath);
+    bool setFullPath(const QString &fullPath);
 
     const QString fileName() const;
     const QString extension() const;
 
     void setEmpty();
-    bool load(const QString& fullPath, QTextEdit* textEdit);
+    bool load(QTextEdit* textEdit);
     bool save(QTextEdit* textEdit);
+
+    const QString getSupportedExtension() const;
+    const QString getSupportedExtensionFilter() const;
+
+private:
+    bool checkExtension(const QString& extension);
 
 private:
     bool _isSaved;
