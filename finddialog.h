@@ -40,7 +40,7 @@ private slots:
 private:
     Ui::FindDialog *ui;
     QTextEdit *_textEdit;
-    SearchHighLight* _searchHighLight;
+    std::unique_ptr<SearchHighLight> _searchHighLight;
 
     QString _text;
     bool _wholeWords;

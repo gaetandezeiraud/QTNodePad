@@ -78,7 +78,7 @@ void FindDialog::init()
     connect(btnNext, &QPushButton::clicked, this, &FindDialog::goNext);
     ui->buttonBox->addButton(btnNext, QDialogButtonBox::ActionRole);
 
-    _searchHighLight = new SearchHighLight(_textEdit->document());
+    _searchHighLight = std::make_unique<SearchHighLight>(_textEdit->document());
 }
 
 void FindDialog::save()
