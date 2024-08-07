@@ -13,40 +13,8 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     setCentralWidget(ui->textEdit);
     setDockOptions(DockOption::AllowNestedDocks | DockOption::AllowTabbedDocks);
-
-    // Recent files
-    QAction* recentFileAction = 0;
-    for(auto i = 0; i < RECENT_FILES_MAX; ++i){
-        recentFileAction = new QAction(this);
-        recentFileAction->setVisible(false);
-        connect(recentFileAction, &QAction::triggered, this, &MainWindow::openRecent);
-        _recentFileActionList.append(recentFileAction);
-    }
-
-    _recentFilesMenu = new QMenu(tr("&Open Recent"));
-    ui->menuFile->insertMenu(ui->menuFile->actions()[2], _recentFilesMenu);
-
-    for(auto i = 0; i < RECENT_FILES_MAX; ++i)
-        _recentFilesMenu->addAction(_recentFileActionList.at(i));
-
-    updateRecentActionList();
-
-    // Custom context menu for textEdit
-    QMenu *contextMenu = ui->textEdit->createStandardContextMenu();
-
-    // Add actions to the context menu
-    contextMenu->addSeparator();
-    contextMenu->addAction(ui->actionBold);
-    contextMenu->addAction(ui->actionItalic);
-    contextMenu->addAction(ui->actionUnderline);
-    contextMenu->addAction(ui->actionStrike);
-
-    // Associate the menu with the QTextEdit
-    ui->textEdit->setContextMenuPolicy(Qt::CustomContextMenu);
-    connect(ui->textEdit, &QTextEdit::customContextMenuRequested, this, [&, contextMenu](const QPoint &pos) {
-        contextMenu->exec(ui->textEdit->mapToGlobal(pos));
-    });
-
+    addRecentFiles();
+    addCustomContextMenu();
     newFile();
 }
 
@@ -191,28 +159,28 @@ void MainWindow::on_actionSelect_All_triggered()
 void MainWindow::on_actionBold_triggered()
 {
     QFont font = ui->textEdit->currentFont();
-    font.bold() ? font.setBold(false) : font.setBold(true);
+    font.setBold(!font.bold());
     ui->textEdit->setCurrentFont(font);
 }
 
 void MainWindow::on_actionItalic_triggered()
 {
     QFont font = ui->textEdit->currentFont();
-    font.italic() ? font.setItalic(false) : font.setItalic(true);
+    font.setItalic(!font.italic());
     ui->textEdit->setCurrentFont(font);
 }
 
 void MainWindow::on_actionUnderline_triggered()
 {
     QFont font = ui->textEdit->currentFont();
-    font.underline() ? font.setUnderline(false) : font.setUnderline(true);
+    font.setUnderline(!font.underline());
     ui->textEdit->setCurrentFont(font);
 }
 
 void MainWindow::on_actionStrike_triggered()
 {
     QFont font = ui->textEdit->currentFont();
-    font.strikeOut() ? font.setStrikeOut(false) : font.setStrikeOut(true);
+    font.setStrikeOut(!font.strikeOut());
     ui->textEdit->setCurrentFont(font);
 }
 
@@ -265,6 +233,13 @@ void MainWindow::on_actionPrint_triggered()
     QPrintDialog *dlg = new QPrintDialog(&printer, this);
     if (dlg->exec() != QDialog::Accepted) return;
     document->print(&printer);
+}
+
+void MainWindow::openRecent()
+{
+    QAction *action = qobject_cast<QAction *>(sender());
+    if (action)
+        openFile(action->data().toString());
 }
 
 void MainWindow::updateCaption()
@@ -355,17 +330,43 @@ void MainWindow::checksave()
         saveFile();
 }
 
-void MainWindow::closeEvent(QCloseEvent *event)
+void MainWindow::addCustomContextMenu()
 {
-    checksave();
-    event->accept();
+    // Custom context menu for textEdit
+    QMenu *contextMenu = ui->textEdit->createStandardContextMenu();
+
+    // Add actions to the context menu
+    contextMenu->addSeparator();
+    contextMenu->addAction(ui->actionBold);
+    contextMenu->addAction(ui->actionItalic);
+    contextMenu->addAction(ui->actionUnderline);
+    contextMenu->addAction(ui->actionStrike);
+
+    // Associate the menu with the QTextEdit
+    ui->textEdit->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(ui->textEdit, &QTextEdit::customContextMenuRequested, this, [&, contextMenu](const QPoint &pos) {
+        contextMenu->exec(ui->textEdit->mapToGlobal(pos));
+    });
 }
 
-void MainWindow::openRecent()
+void MainWindow::addRecentFiles()
 {
-    QAction *action = qobject_cast<QAction *>(sender());
-    if (action)
-        openFile(action->data().toString());
+    // Recent files
+    QAction* recentFileAction = 0;
+    for(auto i = 0; i < RECENT_FILES_MAX; ++i){
+        recentFileAction = new QAction(this);
+        recentFileAction->setVisible(false);
+        connect(recentFileAction, &QAction::triggered, this, &MainWindow::openRecent);
+        _recentFileActionList.append(recentFileAction);
+    }
+
+    _recentFilesMenu = new QMenu(tr("&Open Recent"), this);
+    ui->menuFile->insertMenu(ui->menuFile->actions()[2], _recentFilesMenu);
+
+    for(auto i = 0; i < RECENT_FILES_MAX; ++i)
+        _recentFilesMenu->addAction(_recentFileActionList.at(i));
+
+    updateRecentActionList();
 }
 
 void MainWindow::adjustForCurrentFile(const QString& filePath)
@@ -403,4 +404,10 @@ void MainWindow::updateRecentActionList()
 
     for (auto i = itEnd; i < RECENT_FILES_MAX; ++i)
         _recentFileActionList.at(i)->setVisible(false);
+}
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    checksave();
+    event->accept();
 }

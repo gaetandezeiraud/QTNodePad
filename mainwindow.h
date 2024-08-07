@@ -16,6 +16,7 @@
 #include <QPrintDialog>
 #include <QList>
 #include <QSettings>
+
 #include "finddialog.h"
 #include "replacedialog.h"
 #include "aboutdialog.h"
@@ -64,19 +65,15 @@ private slots:
     void openRecent();
 
 private:
-    Ui::MainWindow *ui;
+    // Add features
+    void addCustomContextMenu();
+    void addRecentFiles();
 
-    QMenu* _recentFilesMenu;
-    QList<QAction*> _recentFileActionList;
+    // Recent files
+    void adjustForCurrentFile(const QString& filePath);
+    void updateRecentActionList();
 
-    QDockWidget *_findDock;
-    FindDialog *_findDialog;
-
-    QDockWidget *_replaceDock;
-    ReplaceDialog *_replaceDialog;
-
-    Document *_document;
-
+    //
     void updateCaption();
     void newFile();
     void openFile();
@@ -85,8 +82,20 @@ private:
     void saveFileAs();
     void checksave();
 
-    void adjustForCurrentFile(const QString& filePath);
-    void updateRecentActionList();
+private:
+    Ui::MainWindow *ui;
+    Document *_document;
+
+    // Recent files
+    QMenu* _recentFilesMenu;
+    QList<QAction*> _recentFileActionList;
+
+    // Docking
+    QDockWidget *_findDock;
+    FindDialog *_findDialog;
+
+    QDockWidget *_replaceDock;
+    ReplaceDialog *_replaceDialog;
 
     // QWidget interface
 protected:
