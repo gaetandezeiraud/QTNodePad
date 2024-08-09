@@ -13,10 +13,7 @@ AboutDialog::AboutDialog(QWidget *parent)
     ui->label_Url->setText(QApplication::organizationDomain());
 }
 
-AboutDialog::~AboutDialog()
-{
-    delete ui;
-}
+AboutDialog::~AboutDialog() = default;
 
 void AboutDialog::on_buttonBox_accepted()
 {

@@ -13,13 +13,13 @@ class AboutDialog : public QDialog
 
 public:
     explicit AboutDialog(QWidget *parent = nullptr);
-    ~AboutDialog();
+    ~AboutDialog() override;
 
 private slots:
     void on_buttonBox_accepted();
 
 private:
-    Ui::AboutDialog *ui;
+    QScopedPointer<Ui::AboutDialog> ui;
 };
 
 #endif // ABOUTDIALOG_H

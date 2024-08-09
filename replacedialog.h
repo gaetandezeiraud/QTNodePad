@@ -14,7 +14,7 @@ class ReplaceDialog : public QDialog
 
 public:
     explicit ReplaceDialog(QWidget *parent = nullptr);
-    ~ReplaceDialog();
+    ~ReplaceDialog() override;
 
     bool all() const;
     QString text() const;
@@ -26,9 +26,9 @@ private slots:
     void replaceAll();
 
 private:
-    Ui::ReplaceDialog *ui;
+    QScopedPointer<Ui::ReplaceDialog> ui;
 
-    bool _all;
+    bool _all = false;
     QString _text;
     QString _replaceText;
 

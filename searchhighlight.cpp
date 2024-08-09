@@ -2,7 +2,7 @@
 
 #include <QTextCharFormat>
 
-SearchHighLight::SearchHighLight(QTextDocument* parent) : BaseClass(parent)
+SearchHighLight::SearchHighLight(QTextDocument* parent) : QSyntaxHighlighter(parent)
 {
     // Set the backlight color
     _format.setBackground(Qt::yellow);
@@ -11,11 +11,11 @@ SearchHighLight::SearchHighLight(QTextDocument* parent) : BaseClass(parent)
 void SearchHighLight::highlightBlock(const QString& text)
 {
     // Using a regular expression, we find all matches.
-    QRegularExpressionMatchIterator matchIterator = _pattern.globalMatch(text);
+    auto matchIterator = _pattern.globalMatch(text);
     while (matchIterator.hasNext())
     {
         // Highlight all matches
-        QRegularExpressionMatch match = matchIterator.next();
+        const auto match = matchIterator.next();
         setFormat(match.capturedStart(), match.capturedLength(), _format);
     }
 }
@@ -36,7 +36,8 @@ void SearchHighLight::searchText(const QString& text)
     QString regexExpr = _wholeWord ? "\\b" : "";
 
     _pattern = QRegularExpression(regexExpr + text + regexExpr);
-    if (!_caseSensitive) _pattern.setPatternOptions(QRegularExpression::CaseInsensitiveOption);
+    if (!_caseSensitive)
+        _pattern.setPatternOptions(QRegularExpression::CaseInsensitiveOption);
 
     rehighlight(); // Restart the backlight
 }

@@ -10,10 +10,7 @@ ReplaceDialog::ReplaceDialog(QWidget *parent)
     save();
 }
 
-ReplaceDialog::~ReplaceDialog()
-{
-    delete ui;
-}
+ReplaceDialog::~ReplaceDialog() = default;
 
 void ReplaceDialog::on_buttonBox_rejected()
 {
@@ -35,8 +32,8 @@ void ReplaceDialog::replaceAll()
 
 void ReplaceDialog::init()
 {
-    QPushButton* btnReplace = new QPushButton("Replace", this);
-    QPushButton* btnReplaceAll = new QPushButton("Replace All", this);
+    const auto btnReplace = new QPushButton("Replace", this);
+    const auto btnReplaceAll = new QPushButton("Replace All", this);
 
     ui->buttonBox->addButton(btnReplace, QDialogButtonBox::ButtonRole::ActionRole);
     ui->buttonBox->addButton(btnReplaceAll, QDialogButtonBox::ButtonRole::ActionRole);

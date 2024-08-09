@@ -10,9 +10,9 @@ class Document
 public:
     Document();
 
-    const bool isNew() const;
+    bool isNew() const;
 
-    const bool isSaved() const;
+    bool isSaved() const;
     void modified();
 
     const QString fullPath() const;
@@ -22,8 +22,8 @@ public:
     const QString extension() const;
 
     void setEmpty();
-    bool load(QTextEdit* textEdit);
-    bool save(QTextEdit* textEdit);
+    bool load(QTextEdit& textEdit);
+    bool save(QTextEdit& textEdit);
 
     const QString getSupportedExtension() const;
     const QString getSupportedExtensionFilter() const;
@@ -32,7 +32,7 @@ private:
     bool checkExtension(const QString& extension);
 
 private:
-    bool _isSaved;
+    bool _isSaved = true;
     QString _fileName;
     QString _fullPath;
     QString _extension;

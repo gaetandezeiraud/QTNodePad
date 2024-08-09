@@ -6,17 +6,16 @@ Document::Document()
     : _fullPath{}
     , _fileName{"Untitled"}
     , _extension{}
-    , _isSaved{true}
 {
 
 }
 
-const bool Document::isNew() const
+bool Document::isNew() const
 {
     return _fullPath.isEmpty();
 }
 
-const bool Document::isSaved() const
+bool Document::isSaved() const
 {
     return _isSaved;
 }
@@ -56,20 +55,20 @@ const QString Document::extension() const
     return _extension;
 }
 
-bool Document::load(QTextEdit* textEdit)
+bool Document::load(QTextEdit& textEdit)
 {
     QFile file(_fullPath);
     if (!file.open(QIODevice::ReadOnly))
         return false;
 
     QTextStream stream(&file);
-    textEdit->setHtml(stream.readAll());
+    textEdit.setHtml(stream.readAll());
     file.close();
 
     return true;
 }
 
-bool Document::save(QTextEdit* textEdit)
+bool Document::save(QTextEdit& textEdit)
 {
     if (_fullPath.isEmpty())
         return false;
@@ -79,7 +78,7 @@ bool Document::save(QTextEdit* textEdit)
         return false;
 
     QTextStream stream(&file);
-    stream << textEdit->toHtml();
+    stream << textEdit.toHtml();
     file.close();
 
     _isSaved = true;

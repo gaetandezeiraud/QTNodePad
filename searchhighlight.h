@@ -7,7 +7,7 @@
 class SearchHighLight : public QSyntaxHighlighter
 {
     Q_OBJECT
-    using BaseClass = QSyntaxHighlighter;
+
 public:
     explicit SearchHighLight(QTextDocument* parent = nullptr);
 
@@ -24,8 +24,8 @@ private:
     QRegularExpression _pattern; // Regular expression to search for, in our case, this word or text
     QTextCharFormat _format;     // Text formatting, highlighting
 
-    bool _wholeWord;
-    bool _caseSensitive;
+    bool _wholeWord = false;
+    bool _caseSensitive = false;
 };
 
 #endif // SEARCHHIGHLIGHT_H
