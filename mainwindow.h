@@ -16,10 +16,7 @@
 #include <QPrintDialog>
 #include <QList>
 #include <QSettings>
-
-#include "finddialog.h"
-#include "replacedialog.h"
-#include "document.h"
+#include <QStringListModel>
 
 #define RECENT_FILES_MAX 5
 
@@ -29,13 +26,18 @@ class MainWindow;
 }
 QT_END_NAMESPACE
 
+class Document;
+class FindDialog;
+class ModelMenu;
+class ReplaceDialog;
+
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
 
 public:
-    MainWindow(QWidget *parent = nullptr);
-    ~MainWindow();
+    explicit MainWindow(QWidget *parent = nullptr);
+    ~MainWindow() override;
 
 private slots:
     void on_actionNew_triggered();
@@ -66,11 +68,9 @@ private slots:
 private:
     // Add features
     void addCustomContextMenu();
-    void addRecentFiles();
 
     // Recent files
-    void adjustForCurrentFile(const QString& filePath);
-    void updateRecentActionList();
+    void updateRecentFilesModel();
 
     //
     void updateCaption();
@@ -82,19 +82,19 @@ private:
     void checksave();
 
 private:
-    Ui::MainWindow *ui;
-    std::unique_ptr<Document> _document;
+    QScopedPointer<Ui::MainWindow> ui;
+    QScopedPointer<Document> _document;
 
     // Recent files
-    QMenu* _recentFilesMenu;
-    QList<QAction*> _recentFileActionList;
+    ModelMenu* _recentFilesMenu = nullptr;
+    QStringListModel _recentFilesModel;
 
     // Docking
-    QDockWidget *_findDock;
-    FindDialog *_findDialog;
+    QScopedPointer<QDockWidget> _findDock;
+    QScopedPointer<FindDialog> _findDialog;
 
-    QDockWidget *_replaceDock;
-    ReplaceDialog *_replaceDialog;
+    QDockWidget *_replaceDock = nullptr;
+    QScopedPointer<ReplaceDialog> _replaceDialog;
 
     // QWidget interface
 protected:

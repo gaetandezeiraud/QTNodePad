@@ -1,10 +1,11 @@
 #include "finddialog.h"
 #include "ui_finddialog.h"
 
-FindDialog::FindDialog(QWidget *parent, QTextEdit *textEdit)
+FindDialog::FindDialog(QTextEdit &textEdit, QWidget *parent)
     : QDialog(parent)
     , ui(new Ui::FindDialog)
-    , _textEdit(textEdit)
+    , _textEdit(&textEdit)
+    , _searchHighLight(new SearchHighLight(_textEdit->document()))
 {
     ui->setupUi(this);
     init();
@@ -12,10 +13,7 @@ FindDialog::FindDialog(QWidget *parent, QTextEdit *textEdit)
     setFocus();
 }
 
-FindDialog::~FindDialog()
-{
-    delete ui;
-}
+FindDialog::~FindDialog() = default;
 
 void FindDialog::reset()
 {
@@ -69,16 +67,14 @@ bool FindDialog::backwards() const
 
 void FindDialog::init()
 {
-    QPushButton* btnPrevious = new QPushButton("Previous", this);
-    QPushButton* btnNext = new QPushButton("Next", this);
+    const auto btnPrevious = new QPushButton("Previous", this);
+    const auto btnNext = new QPushButton("Next", this);
 
     connect(btnPrevious, &QPushButton::clicked, this, &FindDialog::goPrevious);
     ui->buttonBox->addButton(btnPrevious, QDialogButtonBox::ActionRole);
 
     connect(btnNext, &QPushButton::clicked, this, &FindDialog::goNext);
     ui->buttonBox->addButton(btnNext, QDialogButtonBox::ActionRole);
-
-    _searchHighLight = std::make_unique<SearchHighLight>(_textEdit->document());
 }
 
 void FindDialog::save()
@@ -92,9 +88,12 @@ void FindDialog::save()
 void FindDialog::findInTextEdit()
 {
     QTextDocument::FindFlags flags;
-    if (caseSensitive()) flags |= QTextDocument::FindFlag::FindCaseSensitively;
-    if (wholeWords()) flags |= QTextDocument::FindFlag::FindWholeWords;
-    if (backwards()) flags |= QTextDocument::FindFlag::FindBackward;
+    if (caseSensitive())
+        flags |= QTextDocument::FindFlag::FindCaseSensitively;
+    if (wholeWords())
+        flags |= QTextDocument::FindFlag::FindWholeWords;
+    if (backwards())
+        flags |= QTextDocument::FindFlag::FindBackward;
 
     _textEdit->find(text(), flags);
 }

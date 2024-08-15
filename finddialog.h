@@ -15,8 +15,8 @@ class FindDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit FindDialog(QWidget *parent, QTextEdit *textEdit);
-    ~FindDialog();
+    explicit FindDialog(QTextEdit &textEdit, QWidget *parent = nullptr);
+    ~FindDialog() override;
 
     bool wholeWords() const;
     bool caseSensitive() const;
@@ -38,9 +38,9 @@ private slots:
     void on_lineEdit_returnPressed();
 
 private:
-    Ui::FindDialog *ui;
-    QTextEdit *_textEdit;
-    std::unique_ptr<SearchHighLight> _searchHighLight;
+    QScopedPointer<Ui::FindDialog> ui;
+    QPointer<QTextEdit> _textEdit;
+    SearchHighLight* _searchHighLight = nullptr;
 
     QString _text;
     bool _wholeWords;
